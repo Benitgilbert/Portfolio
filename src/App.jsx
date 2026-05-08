@@ -196,12 +196,29 @@ const ContactForm = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); setLoading(true)
-    await new Promise(r => setTimeout(r, 1500))
-    setSent(true); setLoading(false); setForm({ name: '', email: '', message: '' })
-    setTimeout(() => setSent(false), 3000)
+    e.preventDefault(); 
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('contact-email', {
+        body: form
+      })
+      
+      if (error) throw error
+      
+      setSent(true); 
+      setForm({ name: '', email: '', message: '' })
+      setTimeout(() => setSent(false), 5000)
+    } catch (err) {
+      console.error(err)
+      setError("Failed to send message. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -220,6 +237,7 @@ const ContactForm = () => {
           <label className="text-[10px] font-black uppercase text-gray-600 ml-1">Message</label>
           <textarea rows={4} value={form.message} onChange={e=>setForm({...form, message: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm outline-none focus:border-primary transition-all" placeholder="How can we collaborate?" required />
        </div>
+       {error && <p className="text-red-400 text-xs text-center">{error}</p>}
        <button disabled={loading} type="submit" className="w-full py-4 bg-primary rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50">
           {sent ? 'MESSAGE SENT!' : loading ? 'SENDING...' : <><Send size={18}/> SEND MESSAGE</>}
        </button>
