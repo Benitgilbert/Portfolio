@@ -227,6 +227,23 @@ const ContactForm = () => {
   )
 }
 
+const EducationCard = ({ edu }) => (
+  <motion.div {...fadeInUp} className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-primary/40 transition-all shadow-xl group">
+    <div className="flex justify-between items-start mb-4">
+      <div>
+        <h3 className="text-xl font-extrabold group-hover:text-primary transition-colors">{edu.degree}</h3>
+        <p className="text-gray-500 font-bold text-sm">{edu.institution}</p>
+      </div>
+      <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">{edu.period}</span>
+    </div>
+    <div className="flex flex-wrap gap-2 mt-6">
+      {edu.coursework?.map(course => (
+        <span key={course} className="text-[10px] text-gray-400 bg-white/5 px-2 py-1 rounded-lg border border-white/5">{course}</span>
+      ))}
+    </div>
+  </motion.div>
+)
+
 // --- Main Page ---
 
 const LandingPage = () => {
