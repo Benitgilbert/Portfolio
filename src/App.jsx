@@ -144,13 +144,15 @@ const ProjectCard = ({ project }) => (
 
 const CertificateCard = ({ cert }) => (
   <motion.div {...fadeInUp} whileHover={{ y: -3 }} className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-4 hover:border-primary/40 transition-all shadow-md group">
-    <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"><Award size={20}/></div>
-    <div className="flex-1">
-      <h3 className="text-sm font-bold line-clamp-1">{cert.title}</h3>
+    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden border border-white/5 group-hover:bg-primary group-hover:text-white transition-all">
+      {cert.image_url ? <img src={cert.image_url} className="w-full h-full object-cover" /> : <Award size={20}/>}
+    </div>
+    <div className="flex-1 min-w-0">
+      <h3 className="text-sm font-bold line-clamp-1 group-hover:text-primary transition-colors">{cert.title}</h3>
       <div className="flex items-center justify-between mt-1">
-         <p className="text-[10px] text-gray-500 font-medium">{cert.issuer}</p>
+         <p className="text-[10px] text-gray-500 font-medium truncate pr-2">{cert.issuer}</p>
          {cert.credential_url && (
-           <a href={cert.credential_url} target="_blank" className="text-[9px] text-primary hover:underline flex items-center gap-1">Verify <ExternalLink size={8}/></a>
+           <a href={cert.credential_url} target="_blank" className="text-[9px] text-primary hover:underline flex items-center gap-1 whitespace-nowrap"><ExternalLink size={8}/> Verify</a>
          )}
       </div>
     </div>
@@ -197,7 +199,6 @@ const ContactForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setLoading(true)
-    // Simulate sending
     await new Promise(r => setTimeout(r, 1500))
     setSent(true); setLoading(false); setForm({ name: '', email: '', message: '' })
     setTimeout(() => setSent(false), 3000)
@@ -426,6 +427,9 @@ const AdminDashboard = ({ user }) => {
       } else if (type === 'project') {
         await supabase.from('projects').update({ image_url: publicUrl }).eq('id', id)
         fetchData()
+      } else if (type === 'cert') {
+        await supabase.from('certificates').update({ image_url: publicUrl }).eq('id', id)
+        fetchData()
       }
       alert('Uploaded!')
     } catch (err) { alert(err.message) } finally { setUploading(false) }
@@ -593,18 +597,27 @@ const AdminDashboard = ({ user }) => {
              <div className="space-y-4 animate-in slide-in-from-right duration-500">
                 <button onClick={addCert} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD CERTIFICATE</button>
                 {certs.map((c, idx) => (
-                  <div key={c.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 flex gap-4 items-center">
-                     <div className="flex-1 grid md:grid-cols-2 gap-4">
-                        <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Name</label>
-                        <input type="text" value={c.title} onChange={e => { const nc = [...certs]; nc[idx].title = e.target.value; setCerts(nc); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" /></div>
-                        <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Issuer</label>
-                        <input type="text" value={c.issuer} onChange={e => { const nc = [...certs]; nc[idx].issuer = e.target.value; setCerts(nc); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" /></div>
-                        <div className="md:col-span-2 space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Credential URL</label>
-                        <input type="text" value={c.credential_url || ''} onChange={e => { const nc = [...certs]; nc[idx].credential_url = e.target.value; setCerts(nc); }} placeholder="https://..." className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" /></div>
-                     </div>
-                     <div className="flex flex-col gap-2">
-                        <button onClick={async () => { setSaving(true); await supabase.from('certificates').update({title:c.title,issuer:c.issuer,credential_url:c.credential_url}).eq('id',c.id); alert('Saved!'); setSaving(false); }} className="text-green-500/50 hover:text-green-500 p-2"><Save size={20}/></button>
-                        <button onClick={async () => { await supabase.from('certificates').delete().eq('id', c.id); fetchData() }} className="text-red-500/30 hover:text-red-500 p-2"><Trash2 size={20}/></button>
+                  <div key={c.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 group hover:border-primary/20 transition-all">
+                     <div className="flex gap-6 items-start">
+                        <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center overflow-hidden flex-shrink-0 relative group/img">
+                           {c.image_url ? <img src={c.image_url} className="w-full h-full object-cover" /> : <Award className="text-gray-800" size={24}/>}
+                           <label className="absolute inset-0 bg-primary/60 opacity-0 group-hover/img:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                              <Upload size={18} className="text-white"/>
+                              <input type="file" className="hidden" onChange={e => uploadFile(e, 'cert', c.id)}/>
+                           </label>
+                        </div>
+                        <div className="flex-1 grid md:grid-cols-2 gap-4">
+                           <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Name</label>
+                           <input type="text" value={c.title} onChange={e => { const nc = [...certs]; nc[idx].title = e.target.value; setCerts(nc); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" /></div>
+                           <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Issuer</label>
+                           <input type="text" value={c.issuer} onChange={e => { const nc = [...certs]; nc[idx].issuer = e.target.value; setCerts(nc); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" /></div>
+                           <div className="md:col-span-2 space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Credential URL</label>
+                           <input type="text" value={c.credential_url || ''} onChange={e => { const nc = [...certs]; nc[idx].credential_url = e.target.value; setCerts(nc); }} placeholder="https://..." className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" /></div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                           <button onClick={async () => { setSaving(true); await supabase.from('certificates').update({title:c.title,issuer:c.issuer,credential_url:c.credential_url}).eq('id',c.id); alert('Saved!'); setSaving(false); }} className="text-green-500/50 hover:text-green-500 p-2"><Save size={20}/></button>
+                           <button onClick={async () => { await supabase.from('certificates').delete().eq('id', c.id); fetchData() }} className="text-red-500/30 hover:text-red-500 p-2"><Trash2 size={20}/></button>
+                        </div>
                      </div>
                   </div>
                 ))}
