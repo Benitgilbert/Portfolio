@@ -414,23 +414,37 @@ const AdminDashboard = ({ user }) => {
                            <div className="grid md:grid-cols-2 gap-4">
                               <div className="space-y-1">
                                  <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Title</label>
-                                 <input type="text" value={p.title} onChange={e => { const np = [...projects]; np[idx].title = e.target.value; setProjects(np); }} onBlur={() => supabase.from('projects').update({title: p.title}).eq('id', p.id)} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
+                                 <input type="text" value={p.title} onChange={e => { const np = [...projects]; np[idx].title = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
                               </div>
                               <div className="space-y-1">
                                  <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Tech Stack</label>
-                                 <input type="text" value={p.tech_stack?.join(', ') || ''} onChange={e => { const np = [...projects]; np[idx].tech_stack = e.target.value.split(',').map(s=>s.trim()); setProjects(np); }} onBlur={() => supabase.from('projects').update({tech_stack: p.tech_stack}).eq('id', p.id)} placeholder="React, Node, etc." className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
+                                 <input type="text" value={p.tech_stack?.join(', ') || ''} onChange={e => { const np = [...projects]; np[idx].tech_stack = e.target.value.split(',').map(s=>s.trim()); setProjects(np); }} placeholder="React, Node, etc." className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
                               </div>
                            </div>
                            <div className="space-y-1">
                               <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Summary</label>
-                              <textarea value={p.description} onChange={e => { const np = [...projects]; np[idx].description = e.target.value; setProjects(np); }} onBlur={() => supabase.from('projects').update({description: p.description}).eq('id', p.id)} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" rows={2} />
+                              <textarea value={p.description} onChange={e => { const np = [...projects]; np[idx].description = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" rows={2} />
                            </div>
                            <div className="grid md:grid-cols-2 gap-4">
-                              <input type="text" placeholder="Live URL" value={p.live_url || ''} onChange={e => { const np = [...projects]; np[idx].live_url = e.target.value; setProjects(np); }} onBlur={() => supabase.from('projects').update({live_url: p.live_url}).eq('id', p.id)} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" />
-                              <input type="text" placeholder="GitHub URL" value={p.github_url || ''} onChange={e => { const np = [...projects]; np[idx].github_url = e.target.value; setProjects(np); }} onBlur={() => supabase.from('projects').update({github_url: p.github_url}).eq('id', p.id)} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" />
+                              <input type="text" placeholder="Live URL" value={p.live_url || ''} onChange={e => { const np = [...projects]; np[idx].live_url = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" />
+                              <input type="text" placeholder="GitHub URL" value={p.github_url || ''} onChange={e => { const np = [...projects]; np[idx].github_url = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" />
                            </div>
                         </div>
-                        <button onClick={async () => { if(confirm('Delete?')) { await supabase.from('projects').delete().eq('id', p.id); fetchData() } }} className="text-red-500/30 hover:text-red-500 p-2"><Trash2 size={20}/></button>
+                        <div className="flex flex-col gap-2">
+                           <button onClick={async () => { 
+                              setSaving(true);
+                              await supabase.from('projects').update({
+                                title: p.title,
+                                description: p.description,
+                                tech_stack: p.tech_stack,
+                                live_url: p.live_url,
+                                github_url: p.github_url
+                              }).eq('id', p.id);
+                              alert('Project Saved!');
+                              setSaving(false);
+                           }} className="text-green-500/50 hover:text-green-500 p-2 transition-colors" title="Save Changes"><Save size={20}/></button>
+                           <button onClick={async () => { if(confirm('Delete?')) { await supabase.from('projects').delete().eq('id', p.id); fetchData() } }} className="text-red-500/30 hover:text-red-500 p-2"><Trash2 size={20}/></button>
+                        </div>
                      </div>
                   </div>
                 ))}
