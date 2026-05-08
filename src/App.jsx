@@ -76,7 +76,7 @@ const Hero = ({ profile, config }) => (
           {config?.hero_badge}
         </motion.span>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 leading-tight">
-          I'm <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">{profile?.full_name?.split(' ')[0]} {profile?.full_name?.split(' ')[1]}</span>
+          I'm <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">{profile?.full_name}</span>
         </h1>
         <p className="text-base md:text-lg text-gray-400 mb-8 leading-relaxed max-w-lg">{profile?.headline}</p>
         <div className="flex flex-wrap gap-4 items-center">
