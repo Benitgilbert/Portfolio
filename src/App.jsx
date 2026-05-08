@@ -95,8 +95,9 @@ const Hero = ({ profile, config }) => (
             </motion.a>
           )}
           <div className="flex items-center gap-4 px-2">
-            <motion.a whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }} href={profile?.github_url} target="_blank" className="text-gray-400 hover:text-white"><Github size={20} /></motion.a>
-            <motion.a whileHover={{ scale: 1.2, rotate: -5 }} whileTap={{ scale: 0.9 }} href={profile?.linkedin_url} target="_blank" className="text-gray-400 hover:text-white"><Linkedin size={20} /></motion.a>
+            <motion.a whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }} href={profile?.github_url} target="_blank" className="text-gray-400 hover:text-white" title="GitHub"><Github size={20} /></motion.a>
+            <motion.a whileHover={{ scale: 1.2, rotate: -5 }} whileTap={{ scale: 0.9 }} href={profile?.linkedin_url} target="_blank" className="text-gray-400 hover:text-white" title="LinkedIn"><Linkedin size={20} /></motion.a>
+            <motion.a whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }} href={`mailto:${profile?.email}`} className="text-gray-400 hover:text-white" title="Email"><Mail size={20} /></motion.a>
           </div>
         </div>
       </motion.div>
