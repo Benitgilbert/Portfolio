@@ -5,7 +5,7 @@ import {
   Github, Linkedin, Mail, ExternalLink, Code2, Database, 
   BrainCircuit, Rocket, MapPin, Briefcase, GraduationCap, 
   ChevronRight, Layout, Edit3, Save, X, LogOut, Lock, Phone,
-  Settings, User, FolderKanban, Award, Plus, Trash2, Image as ImageIcon, Upload, Download, FileText
+  Settings, User, FolderKanban, Award, Plus, Trash2, Image as ImageIcon, Upload, Download, FileText, Send, ArrowUp
 } from 'lucide-react'
 import { supabase } from './lib/supabase'
 
@@ -30,9 +30,10 @@ const Navbar = ({ logo, user, onLogout }) => {
         <div className="hidden md:flex items-center gap-6 text-xs font-medium text-gray-400">
           <a href="#about" className="hover:text-white transition-colors">About</a>
           <a href="#projects" className="hover:text-white transition-colors">Projects</a>
+          <a href="#experience" className="hover:text-white transition-colors">Experience</a>
           <a href="#certs" className="hover:text-white transition-colors">Certs</a>
           <a href="#skills" className="hover:text-white transition-colors">Skills</a>
-          <a href="#education" className="hover:text-white transition-colors">Education</a>
+          <a href="#contact" className="hover:text-white transition-colors">Contact</a>
           {user ? (
             <div className="flex items-center gap-4">
               <Link to="/admin" className="flex items-center gap-2 text-primary hover:text-primary/80">
@@ -54,9 +55,10 @@ const Navbar = ({ logo, user, onLogout }) => {
             <div className="px-4 py-6 space-y-4 flex flex-col items-center">
               <a href="#about" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">About</a>
               <a href="#projects" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Projects</a>
+              <a href="#experience" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Experience</a>
               <a href="#certs" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Certificates</a>
               <a href="#skills" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Skills</a>
-              <a href="#education" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Education</a>
+              <a href="#contact" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Contact</a>
               {user && <Link to="/admin" className="text-primary font-bold pt-2">Dashboard</Link>}
             </div>
           </motion.div>
@@ -155,21 +157,74 @@ const CertificateCard = ({ cert }) => (
   </motion.div>
 )
 
-const EducationCard = ({ edu }) => (
-  <motion.div {...fadeInUp} className="p-6 rounded-xl bg-white/5 border border-white/10 relative overflow-hidden shadow-lg shadow-black/20">
-    <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-      <h3 className="text-lg font-extrabold">{edu.degree}</h3>
-      <span className="px-3 py-1 rounded-full bg-primary/10 text-[9px] text-primary font-bold border border-primary/20 uppercase tracking-tighter">{edu.period}</span>
+const ExperienceItem = ({ item, isLast }) => (
+  <div className="relative pl-8 pb-12">
+    {!isLast && <div className="absolute left-[7px] top-4 w-px h-full bg-primary/20" />}
+    <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-primary border-4 border-background shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]" />
+    <motion.div {...fadeInUp} className="space-y-2">
+      <span className="text-[10px] font-black text-primary uppercase tracking-widest">{item.period}</span>
+      <h3 className="text-xl font-bold">{item.role}</h3>
+      <p className="text-sm font-semibold text-gray-400 flex items-center gap-2"><Briefcase size={14} className="text-primary"/> {item.company}</p>
+      <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">{item.description}</p>
+    </motion.div>
+  </div>
+)
+
+const SkillItem = ({ skill }) => (
+  <motion.div {...fadeInUp} className="space-y-3 group">
+    <div className="flex justify-between items-end">
+      <span className="text-sm font-bold text-gray-300 group-hover:text-white transition-colors">{skill.name}</span>
+      <span className="text-[10px] font-black text-primary/70">{skill.level || 80}%</span>
     </div>
-    <p className="text-primary/70 font-semibold mb-4 text-sm flex items-center gap-2"><GraduationCap size={16}/> {edu.institution}</p>
-    <div className="flex flex-wrap gap-1.5">
-      {edu.coursework?.map(course => (
-        <span key={course} className="px-2.5 py-1 rounded bg-black/40 text-[9px] text-gray-500 border border-white/5 font-medium">{course}</span>
-      ))}
+    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+       <motion.div 
+         initial={{ width: 0 }} 
+         whileInView={{ width: `${skill.level || 80}%` }} 
+         viewport={{ once: true }}
+         transition={{ duration: 1, ease: "easeOut" }}
+         className="h-full bg-gradient-to-r from-primary to-accent relative"
+       >
+         <div className="absolute top-0 right-0 w-8 h-full bg-white/20 blur-sm" />
+       </motion.div>
     </div>
   </motion.div>
 )
+
+const ContactForm = () => {
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); setLoading(true)
+    // Simulate sending
+    await new Promise(r => setTimeout(r, 1500))
+    setSent(true); setLoading(false); setForm({ name: '', email: '', message: '' })
+    setTimeout(() => setSent(false), 3000)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+       <div className="grid sm:grid-cols-2 gap-6">
+          <div className="space-y-2">
+             <label className="text-[10px] font-black uppercase text-gray-600 ml-1">Your Name</label>
+             <input type="text" value={form.name} onChange={e=>setForm({...form, name: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm outline-none focus:border-primary transition-all" placeholder="John Doe" required />
+          </div>
+          <div className="space-y-2">
+             <label className="text-[10px] font-black uppercase text-gray-600 ml-1">Email Address</label>
+             <input type="email" value={form.email} onChange={e=>setForm({...form, email: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm outline-none focus:border-primary transition-all" placeholder="john@example.com" required />
+          </div>
+       </div>
+       <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase text-gray-600 ml-1">Message</label>
+          <textarea rows={4} value={form.message} onChange={e=>setForm({...form, message: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm outline-none focus:border-primary transition-all" placeholder="How can we collaborate?" required />
+       </div>
+       <button disabled={loading} type="submit" className="w-full py-4 bg-primary rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50">
+          {sent ? 'MESSAGE SENT!' : loading ? 'SENDING...' : <><Send size={18}/> SEND MESSAGE</>}
+       </button>
+    </form>
+  )
+}
 
 // --- Main Page ---
 
@@ -178,25 +233,30 @@ const LandingPage = () => {
   const [projects, setProjects] = useState([])
   const [certs, setCerts] = useState([])
   const [skills, setSkills] = useState([])
+  const [experience, setExperience] = useState([])
   const [education, setEducation] = useState([])
   const [config, setConfig] = useState({})
   const [loading, setLoading] = useState(true)
+  const [showTop, setShowTop] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
-      const [p, pr, cr, s, e, c] = await Promise.all([
+      const [p, pr, cr, s, ex, e, c] = await Promise.all([
         supabase.from('profile').select('*').single(),
         supabase.from('projects').select('*').order('order_index'),
         supabase.from('certificates').select('*').order('order_index'),
         supabase.from('skills').select('*').order('order_index'),
+        supabase.from('experience').select('*').order('order_index'),
         supabase.from('education').select('*').order('id'),
         supabase.from('site_config').select('*')
       ])
-      setProfile(p.data); setProjects(pr.data || []); setCerts(cr.data || []); setSkills(s.data || []); setEducation(e.data || []);
+      setProfile(p.data); setProjects(pr.data || []); setCerts(cr.data || []); setSkills(s.data || []); setExperience(ex.data || []); setEducation(e.data || []);
       const configObj = {}; c.data?.forEach(item => configObj[item.key] = item.value); setConfig(configObj);
       setLoading(false)
     }
     fetchData()
+    const handleScroll = () => setShowTop(window.scrollY > 500); window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-background"><motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full" /></div>
@@ -207,32 +267,46 @@ const LandingPage = () => {
       <Navbar logo={config.logo_text} />
       <Hero profile={profile} config={config} />
 
-      <motion.section {...fadeInUp} id="about" className="py-16 px-4 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 items-start">
+      <motion.section {...fadeInUp} id="about" className="py-24 px-4 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-16 items-start">
           <div className="md:w-1/3">
-             <h2 className="text-2xl font-black mb-4 flex items-center gap-3 text-primary"><Briefcase size={24}/> {config.about_title}</h2>
+             <h2 className="text-3xl font-black mb-4 flex items-center gap-3 text-primary"><Briefcase size={28}/> {config.about_title}</h2>
              <div className="w-16 h-1.5 bg-primary rounded-full mb-8 shadow-lg shadow-primary/20" />
              <div className="space-y-4">
-                <div className="flex items-center gap-4 text-sm text-gray-400 group"><div className="p-2 rounded-lg bg-white/5 group-hover:bg-primary/10 transition-colors"><MapPin size={18} className="text-primary"/></div> {profile.location}</div>
-                <div className="flex items-center gap-4 text-sm text-gray-400 group"><div className="p-2 rounded-lg bg-white/5 group-hover:bg-primary/10 transition-colors"><Mail size={18} className="text-primary"/></div> {profile.email}</div>
-                {profile.contact_phone && <div className="flex items-center gap-4 text-sm text-gray-400 group"><div className="p-2 rounded-lg bg-white/5 group-hover:bg-primary/10 transition-colors"><Phone size={18} className="text-primary"/></div> {profile.contact_phone}</div>}
+                <div className="flex items-center gap-4 text-sm text-gray-400 group"><div className="p-3 rounded-xl bg-white/5 group-hover:bg-primary/10 transition-colors"><MapPin size={20} className="text-primary"/></div> {profile.location}</div>
+                <div className="flex items-center gap-4 text-sm text-gray-400 group"><div className="p-3 rounded-xl bg-white/5 group-hover:bg-primary/10 transition-colors"><Mail size={20} className="text-primary"/></div> {profile.email}</div>
+                {profile.contact_phone && <div className="flex items-center gap-4 text-sm text-gray-400 group"><div className="p-3 rounded-xl bg-white/5 group-hover:bg-primary/10 transition-colors"><Phone size={20} className="text-primary"/></div> {profile.contact_phone}</div>}
              </div>
           </div>
           <div className="md:w-2/3">
-             <p className="text-lg md:text-xl text-gray-300 leading-relaxed italic border-l-4 border-primary/20 pl-8 py-4 bg-white/[0.01] rounded-r-2xl">"{profile.bio}"</p>
+             <p className="text-xl md:text-2xl text-gray-300 leading-relaxed italic border-l-4 border-primary/20 pl-8 py-4 bg-white/[0.01] rounded-r-3xl">"{profile.bio}"</p>
           </div>
         </div>
       </motion.section>
 
-      <section id="projects" className="py-16 px-4 max-w-7xl mx-auto">
-        <motion.h2 {...fadeInUp} className="text-3xl font-black mb-12 flex items-center gap-3"><FolderKanban className="text-primary"/> {config.projects_title}</motion.h2>
+      <section id="projects" className="py-24 px-4 max-w-7xl mx-auto">
+        <motion.h2 {...fadeInUp} className="text-4xl font-black mb-16 flex items-center gap-3"><FolderKanban size={32} className="text-primary"/> {config.projects_title}</motion.h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map(project => <ProjectCard key={project.id} project={project} />)}
         </div>
       </section>
 
+      {experience.length > 0 && (
+        <section id="experience" className="py-24 px-4 max-w-7xl mx-auto border-t border-white/5">
+           <div className="grid lg:grid-cols-3 gap-16">
+              <div>
+                 <h2 className="text-4xl font-black mb-6">Experience</h2>
+                 <p className="text-gray-400 leading-relaxed">My professional journey and industry contributions.</p>
+              </div>
+              <div className="lg:col-span-2">
+                 {experience.map((item, idx) => <ExperienceItem key={item.id} item={item} isLast={idx === experience.length - 1} />)}
+              </div>
+           </div>
+        </section>
+      )}
+
       {certs.length > 0 && (
-        <section id="certs" className="py-16 px-4 max-w-7xl mx-auto">
+        <section id="certs" className="py-24 px-4 max-w-7xl mx-auto border-t border-white/5">
           <motion.h2 {...fadeInUp} className="text-3xl font-black mb-12 flex items-center gap-3"><Award className="text-primary"/> CERTIFICATIONS</motion.h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {certs.map(cert => <CertificateCard key={cert.id} cert={cert} />)}
@@ -240,19 +314,16 @@ const LandingPage = () => {
         </section>
       )}
 
-      <section id="skills" className="py-20 px-4 max-w-7xl mx-auto">
-        <motion.div {...fadeInUp} className="bg-gradient-to-br from-white/[0.03] to-transparent p-12 rounded-[2rem] border border-white/5">
-           <h2 className="text-3xl font-black mb-16 text-center">{config.skills_title}</h2>
-           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <section id="skills" className="py-24 px-4 max-w-7xl mx-auto">
+        <motion.div {...fadeInUp} className="bg-gradient-to-br from-white/[0.03] to-transparent p-12 lg:p-20 rounded-[3rem] border border-white/5">
+           <h2 className="text-4xl font-black mb-20 text-center">{config.skills_title}</h2>
+           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
              {categories.map(cat => (
-               <div key={cat} className="space-y-6">
-                 <h3 className="text-primary font-black text-xs uppercase tracking-widest flex items-center gap-2">{cat} <div className="flex-1 h-px bg-primary/20" /></h3>
-                 <div className="space-y-4">
+               <div key={cat} className="space-y-10">
+                 <h3 className="text-primary font-black text-xs uppercase tracking-[0.3em] flex items-center gap-4">{cat} <div className="flex-1 h-px bg-primary/20" /></h3>
+                 <div className="space-y-8">
                    {skills.filter(s => s.category === cat).map(skill => (
-                     <motion.div key={skill.id} whileHover={{ x: 5 }} className="flex items-center justify-between group cursor-default">
-                       <span className="text-sm text-gray-400 group-hover:text-white transition-colors font-medium">{skill.name}</span>
-                       <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-all group-hover:scale-125" />
-                     </motion.div>
+                     <SkillItem key={skill.id} skill={skill} />
                    ))}
                  </div>
                </div>
@@ -261,21 +332,43 @@ const LandingPage = () => {
         </motion.div>
       </section>
 
-      <section id="education" className="py-20 px-4 max-w-7xl mx-auto">
+      <section id="education" className="py-24 px-4 max-w-7xl mx-auto">
         <motion.h2 {...fadeInUp} className="text-3xl font-black mb-12 flex items-center gap-3"><GraduationCap className="text-primary"/> {config.education_title}</motion.h2>
         <div className="grid md:grid-cols-2 gap-8">
           {education.map(edu => <EducationCard key={edu.id} edu={edu} />)}
         </div>
       </section>
 
-      <footer className="py-20 px-4 text-center border-t border-white/5 bg-black/20">
+      <section id="contact" className="py-32 px-4 max-w-4xl mx-auto">
+         <motion.div {...fadeInUp} className="text-center mb-16 space-y-4">
+            <h2 className="text-5xl font-black">Get In Touch</h2>
+            <p className="text-gray-400">Have a project in mind? Let's build something extraordinary together.</p>
+         </motion.div>
+         <ContactForm />
+      </section>
+
+      <footer className="py-24 px-4 text-center border-t border-white/5 bg-black/20">
         <div className="flex justify-center gap-8 mb-10">
-            <motion.a whileHover={{ y: -5, scale: 1.1 }} href={profile.github_url} className="p-3 rounded-2xl bg-white/5 text-gray-400 hover:text-white hover:bg-primary/10 transition-all shadow-lg"><Github size={24}/></motion.a>
-            <motion.a whileHover={{ y: -5, scale: 1.1 }} href={profile.linkedin_url} className="p-3 rounded-2xl bg-white/5 text-gray-400 hover:text-white hover:bg-primary/10 transition-all shadow-lg"><Linkedin size={24}/></motion.a>
-            <motion.a whileHover={{ y: -5, scale: 1.1 }} href={`mailto:${profile.email}`} className="p-3 rounded-2xl bg-white/5 text-gray-400 hover:text-white hover:bg-primary/10 transition-all shadow-lg"><Mail size={24}/></motion.a>
+            <motion.a whileHover={{ y: -5, scale: 1.1 }} href={profile.github_url} className="p-4 rounded-3xl bg-white/5 text-gray-400 hover:text-white hover:bg-primary/10 transition-all shadow-xl"><Github size={28}/></motion.a>
+            <motion.a whileHover={{ y: -5, scale: 1.1 }} href={profile.linkedin_url} className="p-4 rounded-3xl bg-white/5 text-gray-400 hover:text-white hover:bg-primary/10 transition-all shadow-xl"><Linkedin size={28}/></motion.a>
+            <motion.a whileHover={{ y: -5, scale: 1.1 }} href={`mailto:${profile.email}`} className="p-4 rounded-3xl bg-white/5 text-gray-400 hover:text-white hover:bg-primary/10 transition-all shadow-xl"><Mail size={28}/></motion.a>
         </div>
-        <p className="text-gray-500 text-xs font-medium tracking-wide">© {new Date().getFullYear()} {profile.full_name}. {config.footer_copy}</p>
+        <p className="text-gray-500 text-xs font-black tracking-[0.2em] uppercase leading-relaxed">© {new Date().getFullYear()} {profile.full_name}<br/>{config.footer_copy}</p>
       </footer>
+
+      <AnimatePresence>
+         {showTop && (
+           <motion.button 
+             initial={{ opacity: 0, scale: 0 }} 
+             animate={{ opacity: 1, scale: 1 }} 
+             exit={{ opacity: 0, scale: 0 }}
+             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+             className="fixed bottom-8 right-8 p-4 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 z-50 hover:scale-110 active:scale-90 transition-all"
+           >
+             <ArrowUp size={24}/>
+           </motion.button>
+         )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -288,6 +381,7 @@ const AdminDashboard = ({ user }) => {
   const [projects, setProjects] = useState([])
   const [certs, setCerts] = useState([])
   const [skills, setSkills] = useState([])
+  const [experience, setExperience] = useState([])
   const [education, setEducation] = useState([])
   const [config, setConfig] = useState([])
   const [loading, setLoading] = useState(true)
@@ -299,15 +393,16 @@ const AdminDashboard = ({ user }) => {
   useEffect(() => { if (user) fetchData(); else setLoading(false) }, [user])
 
   const fetchData = async () => {
-    const [p, c, pr, cr, s, e] = await Promise.all([
+    const [p, c, pr, cr, s, ex, e] = await Promise.all([
       supabase.from('profile').select('*').single(),
       supabase.from('site_config').select('*').order('key'),
       supabase.from('projects').select('*').order('order_index'),
       supabase.from('certificates').select('*').order('order_index'),
       supabase.from('skills').select('*').order('order_index'),
+      supabase.from('experience').select('*').order('order_index'),
       supabase.from('education').select('*').order('id')
     ])
-    setProfile(p.data); setConfig(c.data || []); setProjects(pr.data || []); setCerts(cr.data || []); setSkills(s.data || []); setEducation(e.data || []);
+    setProfile(p.data); setConfig(c.data || []); setProjects(pr.data || []); setCerts(cr.data || []); setSkills(s.data || []); setExperience(ex.data || []); setEducation(e.data || []);
     setLoading(false)
   }
 
@@ -340,12 +435,16 @@ const AdminDashboard = ({ user }) => {
     const { data } = await supabase.from('projects').insert({ title: 'New Project', description: 'Desc', order_index: projects.length }).select().single()
     setProjects([...projects, data])
   }
+  const addExperience = async () => {
+    const { data } = await supabase.from('experience').insert({ role: 'Role', company: 'Company', period: '2023 - Present', order_index: experience.length }).select().single()
+    setExperience([...experience, data])
+  }
   const addCert = async () => {
     const { data } = await supabase.from('certificates').insert({ title: 'Certificate Name', issuer: 'Issuer', order_index: certs.length }).select().single()
     setCerts([...certs, data])
   }
   const addSkill = async () => {
-    const { data } = await supabase.from('skills').insert({ name: 'New Skill', category: 'General', order_index: skills.length }).select().single()
+    const { data } = await supabase.from('skills').insert({ name: 'New Skill', category: 'General', level: 80, order_index: skills.length }).select().single()
     setSkills([...skills, data])
   }
   const addEdu = async () => {
@@ -379,10 +478,11 @@ const AdminDashboard = ({ user }) => {
       </div>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-64 space-y-2">
-           {['profile', 'projects', 'certs', 'skills', 'education', 'site'].map(tab => (
+           {['profile', 'projects', 'experience', 'certs', 'skills', 'education', 'site'].map(tab => (
              <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full text-left px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-3 capitalize transition-all ${activeTab === tab ? 'bg-primary text-white shadow-xl shadow-primary/30 scale-105' : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'}`}>
                 {tab === 'profile' && <User size={18}/>}
                 {tab === 'projects' && <FolderKanban size={18}/>}
+                {tab === 'experience' && <Briefcase size={18}/>}
                 {tab === 'certs' && <Award size={18}/>}
                 {tab === 'skills' && <BrainCircuit size={18}/>}
                 {tab === 'education' && <GraduationCap size={18}/>}
@@ -468,6 +568,27 @@ const AdminDashboard = ({ user }) => {
                 ))}
              </div>
            )}
+           {activeTab === 'experience' && (
+             <div className="space-y-4 animate-in slide-in-from-right duration-500">
+                <button onClick={addExperience} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD EXPERIENCE</button>
+                {experience.map((ex, idx) => (
+                  <div key={ex.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 flex gap-4 items-start">
+                     <div className="flex-1 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                           <input type="text" value={ex.role} onChange={e => { const n = [...experience]; n[idx].role = e.target.value; setExperience(n); }} placeholder="Role" className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none" />
+                           <input type="text" value={ex.company} onChange={e => { const n = [...experience]; n[idx].company = e.target.value; setExperience(n); }} placeholder="Company" className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none" />
+                        </div>
+                        <input type="text" value={ex.period} onChange={e => { const n = [...experience]; n[idx].period = e.target.value; setExperience(n); }} placeholder="Period (e.g. 2023 - Present)" className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none" />
+                        <textarea value={ex.description} onChange={e => { const n = [...experience]; n[idx].description = e.target.value; setExperience(n); }} placeholder="Job description..." rows={2} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none" />
+                     </div>
+                     <div className="flex flex-col gap-2">
+                        <button onClick={async () => { setSaving(true); await supabase.from('experience').update({role:ex.role,company:ex.company,period:ex.period,description:ex.description}).eq('id',ex.id); alert('Saved!'); setSaving(false); }} className="text-green-500/50 hover:text-green-500 p-2"><Save size={20}/></button>
+                        <button onClick={async () => { await supabase.from('experience').delete().eq('id', ex.id); fetchData() }} className="text-red-500/30 hover:text-red-500 p-2"><Trash2 size={20}/></button>
+                     </div>
+                  </div>
+                ))}
+             </div>
+           )}
            {activeTab === 'certs' && (
              <div className="space-y-4 animate-in slide-in-from-right duration-500">
                 <button onClick={addCert} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD CERTIFICATE</button>
@@ -496,7 +617,11 @@ const AdminDashboard = ({ user }) => {
                   {skills.map((s, idx) => (
                     <div key={s.id} className="p-4 bg-black/30 rounded-2xl border border-white/5 flex gap-3 items-center">
                        <div className="flex-1 space-y-2">
-                          <input type="text" value={s.name} onChange={e => { const ns = [...skills]; ns[idx].name = e.target.value; setSkills(ns); }} onBlur={() => supabase.from('skills').update({name: s.name}).eq('id', s.id)} className="w-full bg-transparent font-bold text-sm outline-none" />
+                          <input type="text" value={s.name} onChange={e => { const ns = [...skills]; ns[idx].name = e.target.value; setSkills(ns); }} className="w-full bg-transparent font-bold text-sm outline-none" />
+                          <div className="flex items-center gap-2">
+                             <input type="range" min="0" max="100" value={s.level || 80} onChange={e => { const ns = [...skills]; ns[idx].level = parseInt(e.target.value); setSkills(ns); }} onBlur={() => supabase.from('skills').update({level: s.level}).eq('id', s.id)} className="flex-1 accent-primary h-1" />
+                             <span className="text-[10px] font-black text-primary w-8">{s.level || 80}%</span>
+                          </div>
                           <select value={s.category} onChange={e => { const ns = [...skills]; ns[idx].category = e.target.value; setSkills(ns); supabase.from('skills').update({category: e.target.value}).eq('id', s.id).then(()=>fetchData()) }} className="w-full bg-black/40 border border-white/5 rounded px-2 py-1 text-[10px] outline-none">
                              <option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Database">Database</option><option value="Machine Learning">Machine Learning</option><option value="DevOps">DevOps</option><option value="General">General</option>
                           </select>
