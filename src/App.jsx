@@ -30,6 +30,7 @@ const Navbar = ({ logo, user, onLogout }) => {
         <div className="hidden md:flex items-center gap-6 text-xs font-medium text-gray-400">
           <a href="#about" className="hover:text-white transition-colors">About</a>
           <a href="#projects" className="hover:text-white transition-colors">Projects</a>
+          <a href="#certs" className="hover:text-white transition-colors">Certs</a>
           <a href="#skills" className="hover:text-white transition-colors">Skills</a>
           <a href="#education" className="hover:text-white transition-colors">Education</a>
           {user ? (
@@ -53,6 +54,7 @@ const Navbar = ({ logo, user, onLogout }) => {
             <div className="px-4 py-6 space-y-4 flex flex-col items-center">
               <a href="#about" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">About</a>
               <a href="#projects" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Projects</a>
+              <a href="#certs" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Certificates</a>
               <a href="#skills" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Skills</a>
               <a href="#education" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">Education</a>
               {user && <Link to="/admin" className="text-primary font-bold pt-2">Dashboard</Link>}
@@ -138,6 +140,21 @@ const ProjectCard = ({ project }) => (
   </motion.div>
 )
 
+const CertificateCard = ({ cert }) => (
+  <motion.div {...fadeInUp} whileHover={{ y: -3 }} className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-4 hover:border-primary/40 transition-all shadow-md group">
+    <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"><Award size={20}/></div>
+    <div className="flex-1">
+      <h3 className="text-sm font-bold line-clamp-1">{cert.title}</h3>
+      <div className="flex items-center justify-between mt-1">
+         <p className="text-[10px] text-gray-500 font-medium">{cert.issuer}</p>
+         {cert.credential_url && (
+           <a href={cert.credential_url} target="_blank" className="text-[9px] text-primary hover:underline flex items-center gap-1">Verify <ExternalLink size={8}/></a>
+         )}
+      </div>
+    </div>
+  </motion.div>
+)
+
 const EducationCard = ({ edu }) => (
   <motion.div {...fadeInUp} className="p-6 rounded-xl bg-white/5 border border-white/10 relative overflow-hidden shadow-lg shadow-black/20">
     <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
@@ -159,6 +176,7 @@ const EducationCard = ({ edu }) => (
 const LandingPage = () => {
   const [profile, setProfile] = useState(null)
   const [projects, setProjects] = useState([])
+  const [certs, setCerts] = useState([])
   const [skills, setSkills] = useState([])
   const [education, setEducation] = useState([])
   const [config, setConfig] = useState({})
@@ -166,14 +184,15 @@ const LandingPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [p, pr, s, e, c] = await Promise.all([
+      const [p, pr, cr, s, e, c] = await Promise.all([
         supabase.from('profile').select('*').single(),
         supabase.from('projects').select('*').order('order_index'),
+        supabase.from('certificates').select('*').order('order_index'),
         supabase.from('skills').select('*').order('order_index'),
         supabase.from('education').select('*').order('id'),
         supabase.from('site_config').select('*')
       ])
-      setProfile(p.data); setProjects(pr.data || []); setSkills(s.data || []); setEducation(e.data || []);
+      setProfile(p.data); setProjects(pr.data || []); setCerts(cr.data || []); setSkills(s.data || []); setEducation(e.data || []);
       const configObj = {}; c.data?.forEach(item => configObj[item.key] = item.value); setConfig(configObj);
       setLoading(false)
     }
@@ -211,6 +230,15 @@ const LandingPage = () => {
           {projects.map(project => <ProjectCard key={project.id} project={project} />)}
         </div>
       </section>
+
+      {certs.length > 0 && (
+        <section id="certs" className="py-16 px-4 max-w-7xl mx-auto">
+          <motion.h2 {...fadeInUp} className="text-3xl font-black mb-12 flex items-center gap-3"><Award className="text-primary"/> CERTIFICATIONS</motion.h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {certs.map(cert => <CertificateCard key={cert.id} cert={cert} />)}
+          </div>
+        </section>
+      )}
 
       <section id="skills" className="py-20 px-4 max-w-7xl mx-auto">
         <motion.div {...fadeInUp} className="bg-gradient-to-br from-white/[0.03] to-transparent p-12 rounded-[2rem] border border-white/5">
@@ -258,6 +286,7 @@ const AdminDashboard = ({ user }) => {
   const [activeTab, setActiveTab] = useState('profile')
   const [profile, setProfile] = useState(null)
   const [projects, setProjects] = useState([])
+  const [certs, setCerts] = useState([])
   const [skills, setSkills] = useState([])
   const [education, setEducation] = useState([])
   const [config, setConfig] = useState([])
@@ -270,14 +299,15 @@ const AdminDashboard = ({ user }) => {
   useEffect(() => { if (user) fetchData(); else setLoading(false) }, [user])
 
   const fetchData = async () => {
-    const [p, c, pr, s, e] = await Promise.all([
+    const [p, c, pr, cr, s, e] = await Promise.all([
       supabase.from('profile').select('*').single(),
       supabase.from('site_config').select('*').order('key'),
       supabase.from('projects').select('*').order('order_index'),
+      supabase.from('certificates').select('*').order('order_index'),
       supabase.from('skills').select('*').order('order_index'),
       supabase.from('education').select('*').order('id')
     ])
-    setProfile(p.data); setConfig(c.data || []); setProjects(pr.data || []); setSkills(s.data || []); setEducation(e.data || []);
+    setProfile(p.data); setConfig(c.data || []); setProjects(pr.data || []); setCerts(cr.data || []); setSkills(s.data || []); setEducation(e.data || []);
     setLoading(false)
   }
 
@@ -309,6 +339,10 @@ const AdminDashboard = ({ user }) => {
   const addProject = async () => {
     const { data } = await supabase.from('projects').insert({ title: 'New Project', description: 'Desc', order_index: projects.length }).select().single()
     setProjects([...projects, data])
+  }
+  const addCert = async () => {
+    const { data } = await supabase.from('certificates').insert({ title: 'Certificate Name', issuer: 'Issuer', order_index: certs.length }).select().single()
+    setCerts([...certs, data])
   }
   const addSkill = async () => {
     const { data } = await supabase.from('skills').insert({ name: 'New Skill', category: 'General', order_index: skills.length }).select().single()
@@ -345,10 +379,11 @@ const AdminDashboard = ({ user }) => {
       </div>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-64 space-y-2">
-           {['profile', 'projects', 'skills', 'education', 'site'].map(tab => (
+           {['profile', 'projects', 'certs', 'skills', 'education', 'site'].map(tab => (
              <button key={tab} onClick={() => setActiveTab(tab)} className={`w-full text-left px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-3 capitalize transition-all ${activeTab === tab ? 'bg-primary text-white shadow-xl shadow-primary/30 scale-105' : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'}`}>
                 {tab === 'profile' && <User size={18}/>}
                 {tab === 'projects' && <FolderKanban size={18}/>}
+                {tab === 'certs' && <Award size={18}/>}
                 {tab === 'skills' && <BrainCircuit size={18}/>}
                 {tab === 'education' && <GraduationCap size={18}/>}
                 {tab === 'site' && <Settings size={18}/>}
@@ -412,39 +447,43 @@ const AdminDashboard = ({ user }) => {
                         </div>
                         <div className="flex-1 space-y-4">
                            <div className="grid md:grid-cols-2 gap-4">
-                              <div className="space-y-1">
-                                 <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Title</label>
-                                 <input type="text" value={p.title} onChange={e => { const np = [...projects]; np[idx].title = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
-                              </div>
-                              <div className="space-y-1">
-                                 <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Tech Stack</label>
-                                 <input type="text" value={p.tech_stack?.join(', ') || ''} onChange={e => { const np = [...projects]; np[idx].tech_stack = e.target.value.split(',').map(s=>s.trim()); setProjects(np); }} placeholder="React, Node, etc." className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
-                              </div>
+                              <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Title</label>
+                              <input type="text" value={p.title} onChange={e => { const np = [...projects]; np[idx].title = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" /></div>
+                              <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Tech Stack</label>
+                              <input type="text" value={p.tech_stack?.join(', ') || ''} onChange={e => { const np = [...projects]; np[idx].tech_stack = e.target.value.split(',').map(s=>s.trim()); setProjects(np); }} placeholder="React, Node, etc." className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" /></div>
                            </div>
-                           <div className="space-y-1">
-                              <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Summary</label>
-                              <textarea value={p.description} onChange={e => { const np = [...projects]; np[idx].description = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" rows={2} />
-                           </div>
+                           <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Summary</label>
+                           <textarea value={p.description} onChange={e => { const np = [...projects]; np[idx].description = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" rows={2} /></div>
                            <div className="grid md:grid-cols-2 gap-4">
                               <input type="text" placeholder="Live URL" value={p.live_url || ''} onChange={e => { const np = [...projects]; np[idx].live_url = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" />
                               <input type="text" placeholder="GitHub URL" value={p.github_url || ''} onChange={e => { const np = [...projects]; np[idx].github_url = e.target.value; setProjects(np); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" />
                            </div>
                         </div>
                         <div className="flex flex-col gap-2">
-                           <button onClick={async () => { 
-                              setSaving(true);
-                              await supabase.from('projects').update({
-                                title: p.title,
-                                description: p.description,
-                                tech_stack: p.tech_stack,
-                                live_url: p.live_url,
-                                github_url: p.github_url
-                              }).eq('id', p.id);
-                              alert('Project Saved!');
-                              setSaving(false);
-                           }} className="text-green-500/50 hover:text-green-500 p-2 transition-colors" title="Save Changes"><Save size={20}/></button>
+                           <button onClick={async () => { setSaving(true); await supabase.from('projects').update({title:p.title,description:p.description,tech_stack:p.tech_stack,live_url:p.live_url,github_url:p.github_url}).eq('id',p.id); alert('Saved!'); setSaving(false); }} className="text-green-500/50 hover:text-green-500 p-2"><Save size={20}/></button>
                            <button onClick={async () => { if(confirm('Delete?')) { await supabase.from('projects').delete().eq('id', p.id); fetchData() } }} className="text-red-500/30 hover:text-red-500 p-2"><Trash2 size={20}/></button>
                         </div>
+                     </div>
+                  </div>
+                ))}
+             </div>
+           )}
+           {activeTab === 'certs' && (
+             <div className="space-y-4 animate-in slide-in-from-right duration-500">
+                <button onClick={addCert} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD CERTIFICATE</button>
+                {certs.map((c, idx) => (
+                  <div key={c.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 flex gap-4 items-center">
+                     <div className="flex-1 grid md:grid-cols-2 gap-4">
+                        <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Name</label>
+                        <input type="text" value={c.title} onChange={e => { const nc = [...certs]; nc[idx].title = e.target.value; setCerts(nc); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" /></div>
+                        <div className="space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Issuer</label>
+                        <input type="text" value={c.issuer} onChange={e => { const nc = [...certs]; nc[idx].issuer = e.target.value; setCerts(nc); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" /></div>
+                        <div className="md:col-span-2 space-y-1"><label className="text-[9px] font-black uppercase text-gray-600 ml-1">Credential URL</label>
+                        <input type="text" value={c.credential_url || ''} onChange={e => { const nc = [...certs]; nc[idx].credential_url = e.target.value; setCerts(nc); }} placeholder="https://..." className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" /></div>
+                     </div>
+                     <div className="flex flex-col gap-2">
+                        <button onClick={async () => { setSaving(true); await supabase.from('certificates').update({title:c.title,issuer:c.issuer,credential_url:c.credential_url}).eq('id',c.id); alert('Saved!'); setSaving(false); }} className="text-green-500/50 hover:text-green-500 p-2"><Save size={20}/></button>
+                        <button onClick={async () => { await supabase.from('certificates').delete().eq('id', c.id); fetchData() }} className="text-red-500/30 hover:text-red-500 p-2"><Trash2 size={20}/></button>
                      </div>
                   </div>
                 ))}
