@@ -622,11 +622,23 @@ const AdminDashboard = ({ user }) => {
                 <div key={ex.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 flex gap-4 items-start">
                   <div className="flex-1 space-y-4">
                     <div className="grid md:grid-cols-2 gap-4">
-                      <input type="text" value={ex.role} onChange={e => { const n = [...experience]; n[idx].role = e.target.value; setExperience(n); }} placeholder="Role" className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none" />
-                      <input type="text" value={ex.company} onChange={e => { const n = [...experience]; n[idx].company = e.target.value; setExperience(n); }} placeholder="Company" className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none" />
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Role / Position</label>
+                        <input type="text" value={ex.role} onChange={e => { const n = [...experience]; n[idx].role = e.target.value; setExperience(n); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Company / Organization</label>
+                        <input type="text" value={ex.company} onChange={e => { const n = [...experience]; n[idx].company = e.target.value; setExperience(n); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
+                      </div>
                     </div>
-                    <input type="text" value={ex.period} onChange={e => { const n = [...experience]; n[idx].period = e.target.value; setExperience(n); }} placeholder="Period (e.g. 2023 - Present)" className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none" />
-                    <textarea value={ex.description} onChange={e => { const n = [...experience]; n[idx].description = e.target.value; setExperience(n); }} placeholder="Job description..." rows={2} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none" />
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Duration (e.g., 2023 - Present)</label>
+                      <input type="text" value={ex.period} onChange={e => { const n = [...experience]; n[idx].period = e.target.value; setExperience(n); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Job Description</label>
+                      <textarea value={ex.description} onChange={e => { const n = [...experience]; n[idx].description = e.target.value; setExperience(n); }} rows={2} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-primary" />
+                    </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <button onClick={async () => { setSaving(true); await supabase.from('experience').update({ role: ex.role, company: ex.company, period: ex.period, description: ex.description }).eq('id', ex.id); alert('Saved!'); setSaving(false); }} className="text-green-500/50 hover:text-green-500 p-2"><Save size={20} /></button>
@@ -711,13 +723,25 @@ const AdminDashboard = ({ user }) => {
                 <div key={e.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 space-y-4">
                   <div className="flex justify-between items-start">
                     <div className="flex-1 grid md:grid-cols-2 gap-4">
-                      <input type="text" value={e.degree} onChange={val => { const ne = [...education]; ne[idx].degree = val.target.value; setEducation(ne); }} onBlur={() => supabase.from('education').update({ degree: e.degree }).eq('id', e.id)} className="bg-transparent font-bold text-sm outline-none" placeholder="Degree" />
-                      <input type="text" value={e.period} onChange={val => { const ne = [...education]; ne[idx].period = val.target.value; setEducation(ne); }} onBlur={() => supabase.from('education').update({ period: e.period }).eq('id', e.id)} className="bg-transparent text-primary text-xs outline-none text-right" placeholder="Period" />
-                      <input type="text" value={e.institution} onChange={val => { const ne = [...education]; ne[idx].institution = val.target.value; setEducation(ne); }} onBlur={() => supabase.from('education').update({ institution: e.institution }).eq('id', e.id)} className="bg-transparent text-gray-500 text-xs outline-none" placeholder="Institution" />
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Degree / Qualification</label>
+                        <input type="text" value={e.degree} onChange={val => { const ne = [...education]; ne[idx].degree = val.target.value; setEducation(ne); }} onBlur={() => supabase.from('education').update({ degree: e.degree }).eq('id', e.id)} className="w-full bg-transparent font-bold text-sm outline-none" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Period</label>
+                        <input type="text" value={e.period} onChange={val => { const ne = [...education]; ne[idx].period = val.target.value; setEducation(ne); }} onBlur={() => supabase.from('education').update({ period: e.period }).eq('id', e.id)} className="w-full bg-transparent text-primary text-xs outline-none text-right font-black" />
+                      </div>
+                      <div className="md:col-span-2 space-y-1">
+                        <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Institution</label>
+                        <input type="text" value={e.institution} onChange={val => { const ne = [...education]; ne[idx].institution = val.target.value; setEducation(ne); }} onBlur={() => supabase.from('education').update({ institution: e.institution }).eq('id', e.id)} className="w-full bg-transparent text-gray-500 text-xs outline-none" />
+                      </div>
                     </div>
-                    <button onClick={async () => { await supabase.from('education').delete().eq('id', e.id); fetchData() }} className="text-red-500/30 hover:text-red-500 ml-4"><Trash2 size={18} /></button>
+                    <button onClick={async () => { if(confirm('Delete?')) { await supabase.from('education').delete().eq('id', e.id); fetchData() } }} className="text-red-500/30 hover:text-red-500 ml-4"><Trash2 size={18} /></button>
                   </div>
-                  <input type="text" value={e.coursework?.join(', ') || ''} onChange={val => { const ne = [...education]; ne[idx].coursework = val.target.value.split(',').map(s => s.trim()); setEducation(ne); }} onBlur={() => supabase.from('education').update({ coursework: e.coursework }).eq('id', e.id)} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-[10px] outline-none" placeholder="Coursework (comma separated)" />
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Key Coursework (Comma separated)</label>
+                    <input type="text" value={e.coursework?.join(', ') || ''} onChange={val => { const ne = [...education]; ne[idx].coursework = val.target.value.split(',').map(s => s.trim()); setEducation(ne); }} onBlur={() => supabase.from('education').update({ coursework: e.coursework }).eq('id', e.id)} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-[10px] outline-none focus:border-primary" />
+                  </div>
                 </div>
               ))}
             </div>
