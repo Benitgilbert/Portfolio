@@ -173,21 +173,26 @@ const ExperienceItem = ({ item, isLast }) => (
 )
 
 const SkillItem = ({ skill }) => (
-  <motion.div {...fadeInUp} className="space-y-3 group">
-    <div className="flex justify-between items-end">
-      <span className="text-sm font-bold text-gray-300 group-hover:text-white transition-colors">{skill.name}</span>
-      <span className="text-[10px] font-black text-primary/70">{skill.level || 80}%</span>
+  <motion.div {...fadeInUp} whileHover={{ y: -3 }} className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center gap-4 hover:border-primary/40 transition-all shadow-md group">
+    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden border border-white/5 group-hover:bg-primary group-hover:text-white transition-all">
+      {skill.image_url ? <img src={skill.image_url} className="w-full h-full object-cover" /> : <Code2 size={20} />}
     </div>
-    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
-      <motion.div
-        initial={{ width: 0 }}
-        whileInView={{ width: `${skill.level || 80}%` }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="h-full bg-gradient-to-r from-primary to-accent relative"
-      >
-        <div className="absolute top-0 right-0 w-8 h-full bg-white/20 blur-sm" />
-      </motion.div>
+    <div className="flex-1 min-w-0">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-sm font-bold line-clamp-1 group-hover:text-primary transition-colors">{skill.name}</h3>
+        <span className="text-[10px] font-black text-primary/70">{skill.level || 80}%</span>
+      </div>
+      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: `${skill.level || 80}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="h-full bg-gradient-to-r from-primary to-accent relative"
+        >
+          <div className="absolute top-0 right-0 w-8 h-full bg-white/20 blur-sm" />
+        </motion.div>
+      </div>
     </div>
   </motion.div>
 )
@@ -353,11 +358,11 @@ const LandingPage = () => {
       <section id="skills" className="py-24 px-4 max-w-7xl mx-auto">
         <motion.div {...fadeInUp} className="bg-gradient-to-br from-white/[0.03] to-transparent p-12 lg:p-20 rounded-[3rem] border border-white/5">
           <h2 className="text-4xl font-black mb-20 text-center">{config.skills_title}</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
             {categories.map(cat => (
-              <div key={cat} className="space-y-10">
+              <div key={cat} className="space-y-8">
                 <h3 className="text-primary font-black text-xs uppercase tracking-[0.3em] flex items-center gap-4">{cat} <div className="flex-1 h-px bg-primary/20" /></h3>
-                <div className="space-y-8">
+                <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-4">
                   {skills.filter(s => s.category === cat).map(skill => (
                     <SkillItem key={skill.id} skill={skill} />
                   ))}
@@ -464,6 +469,9 @@ const AdminDashboard = ({ user }) => {
         fetchData()
       } else if (type === 'cert') {
         await supabase.from('certificates').update({ image_url: publicUrl }).eq('id', id)
+        fetchData()
+      } else if (type === 'skill') {
+        await supabase.from('skills').update({ image_url: publicUrl }).eq('id', id)
         fetchData()
       }
       alert('Uploaded!')
@@ -659,25 +667,41 @@ const AdminDashboard = ({ user }) => {
             </div>
           )}
           {activeTab === 'skills' && (
-            <div className="space-y-6 animate-in slide-in-from-right duration-500">
+            <div className="space-y-4 animate-in slide-in-from-right duration-500">
               <button onClick={addSkill} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD NEW SKILL</button>
-              <div className="grid md:grid-cols-2 gap-4">
-                {skills.map((s, idx) => (
-                  <div key={s.id} className="p-4 bg-black/30 rounded-2xl border border-white/5 flex gap-3 items-center">
-                    <div className="flex-1 space-y-2">
-                      <input type="text" value={s.name} onChange={e => { const ns = [...skills]; ns[idx].name = e.target.value; setSkills(ns); }} className="w-full bg-transparent font-bold text-sm outline-none" />
-                      <div className="flex items-center gap-2">
-                        <input type="range" min="0" max="100" value={s.level || 80} onChange={e => { const ns = [...skills]; ns[idx].level = parseInt(e.target.value); setSkills(ns); }} onBlur={() => supabase.from('skills').update({ level: s.level }).eq('id', s.id)} className="flex-1 accent-primary h-1" />
-                        <span className="text-[10px] font-black text-primary w-8">{s.level || 80}%</span>
-                      </div>
-                      <select value={s.category} onChange={e => { const ns = [...skills]; ns[idx].category = e.target.value; setSkills(ns); supabase.from('skills').update({ category: e.target.value }).eq('id', s.id).then(() => fetchData()) }} className="w-full bg-black/40 border border-white/5 rounded px-2 py-1 text-[10px] outline-none">
-                        <option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Database">Database</option><option value="Machine Learning">Machine Learning</option><option value="DevOps">DevOps</option><option value="General">General</option>
-                      </select>
+              {skills.map((s, idx) => (
+                <div key={s.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 group hover:border-primary/20 transition-all">
+                  <div className="flex gap-6 items-start">
+                    <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center overflow-hidden flex-shrink-0 relative group/img">
+                      {s.image_url ? <img src={s.image_url} className="w-full h-full object-cover" /> : <Code2 className="text-gray-800" size={24} />}
+                      <label className="absolute inset-0 bg-primary/60 opacity-0 group-hover/img:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                        <Upload size={18} className="text-white" />
+                        <input type="file" className="hidden" onChange={e => uploadFile(e, 'skill', s.id)} />
+                      </label>
                     </div>
-                    <button onClick={async () => { await supabase.from('skills').delete().eq('id', s.id); fetchData() }} className="text-red-500/30 hover:text-red-500"><Trash2 size={16} /></button>
+                    <div className="flex-1 grid md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Skill Name</label>
+                        <input type="text" value={s.name} onChange={e => { const ns = [...skills]; ns[idx].name = e.target.value; setSkills(ns); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Category</label>
+                        <select value={s.category} onChange={e => { const ns = [...skills]; ns[idx].category = e.target.value; setSkills(ns); }} className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary">
+                          <option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="Database">Database</option><option value="Machine Learning">Machine Learning</option><option value="DevOps">DevOps</option><option value="General">General</option>
+                        </select>
+                      </div>
+                      <div className="md:col-span-2 space-y-1">
+                        <label className="text-[9px] font-black uppercase text-gray-600 ml-1">Proficiency Level ({s.level || 80}%)</label>
+                        <input type="range" min="0" max="100" value={s.level || 80} onChange={e => { const ns = [...skills]; ns[idx].level = parseInt(e.target.value); setSkills(ns); }} className="w-full accent-primary h-2" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <button onClick={async () => { setSaving(true); await supabase.from('skills').update({ name: s.name, category: s.category, level: s.level }).eq('id', s.id); alert('Saved!'); setSaving(false); }} className="text-green-500/50 hover:text-green-500 p-2"><Save size={20} /></button>
+                      <button onClick={async () => { if (confirm('Delete?')) { await supabase.from('skills').delete().eq('id', s.id); fetchData() } }} className="text-red-500/30 hover:text-red-500 p-2"><Trash2 size={20} /></button>
+                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           )}
           {activeTab === 'education' && (
