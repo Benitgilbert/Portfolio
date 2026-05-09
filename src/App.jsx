@@ -382,7 +382,7 @@ const LandingPage = () => {
 
       <section id="contact" className="py-32 px-4 max-w-4xl mx-auto">
         <motion.div {...fadeInUp} className="text-center mb-16 space-y-4">
-          <h2 className="text-5xl font-black">Get In Touch</h2>
+          <h2 className="text-5xl font-black flex items-center justify-center gap-4"><Mail size={40} className="text-primary" /> Get In Touch</h2>
           <p className="text-gray-400">Have a project in mind? Let's build something extraordinary together.</p>
         </motion.div>
         <ContactForm />
@@ -540,7 +540,12 @@ const AdminDashboard = ({ user }) => {
         </div>
         <div className="flex-1 bg-white/5 border border-white/10 rounded-[2.5rem] p-8 min-h-[500px] shadow-2xl overflow-hidden">
           {activeTab === 'profile' && (
-            <form onSubmit={updateProfile} className="space-y-8 animate-in fade-in duration-500">
+            <div className="animate-in fade-in duration-500">
+              <div className="flex items-center gap-3 mb-10 pb-4 border-b border-white/5">
+                <User size={24} className="text-primary" />
+                <h2 className="text-xl font-black uppercase tracking-widest">Manage Profile</h2>
+              </div>
+              <form onSubmit={updateProfile} className="space-y-8">
               <div className="flex items-center gap-8">
                 <div className="w-24 h-24 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-primary/10">
                   {profile?.photo_url ? <img src={profile.photo_url} className="w-full h-full object-cover" /> : <ImageIcon className="text-gray-700" size={32} />}
@@ -577,10 +582,14 @@ const AdminDashboard = ({ user }) => {
               <div className="space-y-2"><label className="text-[10px] font-black uppercase text-gray-600 ml-1">Short Bio</label>
                 <textarea rows={3} value={profile?.bio || ''} onChange={e => setProfile({ ...profile, bio: e.target.value })} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition-all" /></div>
               <button type="submit" disabled={saving} className="px-10 py-4 bg-primary rounded-2xl font-black text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">{saving ? 'Syncing...' : 'Save All Changes'}</button>
-            </form>
+            </div>
           )}
           {activeTab === 'projects' && (
             <div className="space-y-4 animate-in slide-in-from-right duration-500">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                <FolderKanban size={24} className="text-primary" />
+                <h2 className="text-xl font-black uppercase tracking-widest">Project Gallery</h2>
+              </div>
               <button onClick={addProject} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD NEW PROJECT</button>
               {projects.map((p, idx) => (
                 <div key={p.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 group hover:border-primary/20 transition-all">
@@ -617,6 +626,10 @@ const AdminDashboard = ({ user }) => {
           )}
           {activeTab === 'experience' && (
             <div className="space-y-4 animate-in slide-in-from-right duration-500">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                <Briefcase size={24} className="text-primary" />
+                <h2 className="text-xl font-black uppercase tracking-widest">Work Experience</h2>
+              </div>
               <button onClick={addExperience} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD EXPERIENCE</button>
               {experience.map((ex, idx) => (
                 <div key={ex.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 flex gap-4 items-start">
@@ -650,6 +663,10 @@ const AdminDashboard = ({ user }) => {
           )}
           {activeTab === 'certs' && (
             <div className="space-y-4 animate-in slide-in-from-right duration-500">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                <Award size={24} className="text-primary" />
+                <h2 className="text-xl font-black uppercase tracking-widest">Certifications</h2>
+              </div>
               <button onClick={addCert} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD CERTIFICATE</button>
               {certs.map((c, idx) => (
                 <div key={c.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 group hover:border-primary/20 transition-all">
@@ -680,6 +697,10 @@ const AdminDashboard = ({ user }) => {
           )}
           {activeTab === 'skills' && (
             <div className="space-y-4 animate-in slide-in-from-right duration-500">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                <BrainCircuit size={24} className="text-primary" />
+                <h2 className="text-xl font-black uppercase tracking-widest">Technical Skills</h2>
+              </div>
               <button onClick={addSkill} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD NEW SKILL</button>
               {skills.map((s, idx) => (
                 <div key={s.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 group hover:border-primary/20 transition-all">
@@ -718,6 +739,10 @@ const AdminDashboard = ({ user }) => {
           )}
           {activeTab === 'education' && (
             <div className="space-y-6 animate-in slide-in-from-right duration-500">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                <GraduationCap size={24} className="text-primary" />
+                <h2 className="text-xl font-black uppercase tracking-widest">Education History</h2>
+              </div>
               <button onClick={addEdu} className="w-full py-4 border-2 border-dashed border-primary/20 text-primary font-black text-xs rounded-2xl hover:bg-primary/5 transition-all">+ ADD EDUCATION</button>
               {education.map((e, idx) => (
                 <div key={e.id} className="p-6 bg-black/30 rounded-3xl border border-white/5 space-y-4">
@@ -748,6 +773,10 @@ const AdminDashboard = ({ user }) => {
           )}
           {activeTab === 'site' && (
             <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                <Settings size={24} className="text-primary" />
+                <h2 className="text-xl font-black uppercase tracking-widest">Site Configuration</h2>
+              </div>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xs font-black text-gray-600 uppercase tracking-widest">Site Configuration Labels</h3>
                 <button onClick={async () => {
