@@ -336,7 +336,7 @@ const LandingPage = () => {
         <section id="experience" className="py-24 px-4 max-w-7xl mx-auto border-t border-white/5">
           <div className="grid lg:grid-cols-3 gap-16">
             <div>
-              <h2 className="text-4xl font-black mb-6">Experience</h2>
+              <h2 className="text-4xl font-black mb-6 flex items-center gap-3"><Briefcase size={32} className="text-primary" /> Experience</h2>
               <p className="text-gray-400 leading-relaxed">My professional journey and industry contributions.</p>
             </div>
             <div className="lg:col-span-2">
@@ -357,7 +357,7 @@ const LandingPage = () => {
 
       <section id="skills" className="py-24 px-4 max-w-7xl mx-auto">
         <motion.div {...fadeInUp} className="bg-gradient-to-br from-white/[0.03] to-transparent p-12 lg:p-20 rounded-[3rem] border border-white/5">
-          <h2 className="text-4xl font-black mb-20 text-center">{config.skills_title}</h2>
+          <h2 className="text-4xl font-black mb-20 flex items-center justify-center gap-4"><BrainCircuit size={40} className="text-primary" /> {config.skills_title}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
             {categories.map(cat => (
               <div key={cat} className="space-y-8">
