@@ -357,7 +357,7 @@ const LandingPage = () => {
 
       <section id="skills" className="py-24 px-4 max-w-7xl mx-auto">
         <motion.div {...fadeInUp} className="bg-gradient-to-br from-white/[0.03] to-transparent p-12 lg:p-20 rounded-[3rem] border border-white/5">
-          <h2 className="text-4xl font-black mb-20 flex items-center justify-center gap-4"><BrainCircuit size={40} className="text-primary" /> {config.skills_title}</h2>
+          <h2 className="text-4xl font-black mb-16 flex items-center gap-4"><BrainCircuit size={40} className="text-primary" /> {config.skills_title}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
             {categories.map(cat => (
               <div key={cat} className="space-y-8">
@@ -381,8 +381,8 @@ const LandingPage = () => {
       </section>
 
       <section id="contact" className="py-32 px-4 max-w-4xl mx-auto">
-        <motion.div {...fadeInUp} className="text-center mb-16 space-y-4">
-          <h2 className="text-5xl font-black flex items-center justify-center gap-4"><Mail size={40} className="text-primary" /> Get In Touch</h2>
+        <motion.div {...fadeInUp} className="text-left mb-16 space-y-4">
+          <h2 className="text-5xl font-black flex items-center gap-4"><Mail size={40} className="text-primary" /> Get In Touch</h2>
           <p className="text-gray-400">Have a project in mind? Let's build something extraordinary together.</p>
         </motion.div>
         <ContactForm />
