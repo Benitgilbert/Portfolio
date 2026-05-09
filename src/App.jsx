@@ -582,6 +582,7 @@ const AdminDashboard = ({ user }) => {
               <div className="space-y-2"><label className="text-[10px] font-black uppercase text-gray-600 ml-1">Short Bio</label>
                 <textarea rows={3} value={profile?.bio || ''} onChange={e => setProfile({ ...profile, bio: e.target.value })} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition-all" /></div>
               <button type="submit" disabled={saving} className="px-10 py-4 bg-primary rounded-2xl font-black text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">{saving ? 'Syncing...' : 'Save All Changes'}</button>
+              </form>
             </div>
           )}
           {activeTab === 'projects' && (
