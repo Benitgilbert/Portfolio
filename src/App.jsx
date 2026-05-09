@@ -311,7 +311,7 @@ const LandingPage = () => {
       <motion.section {...fadeInUp} id="about" className="py-24 px-4 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-16 items-start">
           <div className="md:w-1/3">
-            <h2 className="text-3xl font-black mb-4 flex items-center gap-3 text-primary"><Briefcase size={28} /> {config.about_title}</h2>
+            <h2 className="text-3xl font-black mb-4 flex items-center gap-3 text-primary"><Briefcase size={28} /> {config.about_title || 'ABOUT ME'}</h2>
             <div className="w-16 h-1.5 bg-primary rounded-full mb-8 shadow-lg shadow-primary/20" />
             <div className="space-y-4">
               <div className="flex items-center gap-4 text-sm text-gray-400 group"><div className="p-3 rounded-xl bg-white/5 group-hover:bg-primary/10 transition-colors"><MapPin size={20} className="text-primary" /></div> {profile.location}</div>
@@ -326,7 +326,7 @@ const LandingPage = () => {
       </motion.section>
 
       <section id="projects" className="py-24 px-4 max-w-7xl mx-auto">
-        <motion.h2 {...fadeInUp} className="text-4xl font-black mb-16 flex items-center gap-3"><FolderKanban size={32} className="text-primary" /> {config.projects_title}</motion.h2>
+        <motion.h2 {...fadeInUp} className="text-4xl font-black mb-16 flex items-center gap-3"><FolderKanban size={32} className="text-primary" /> {config.projects_title || 'FEATURED PROJECTS'}</motion.h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map(project => <ProjectCard key={project.id} project={project} />)}
         </div>
@@ -357,7 +357,7 @@ const LandingPage = () => {
 
       <section id="skills" className="py-24 px-4 max-w-7xl mx-auto">
         <motion.div {...fadeInUp} className="bg-gradient-to-br from-white/[0.03] to-transparent p-12 lg:p-20 rounded-[3rem] border border-white/5">
-          <h2 className="text-4xl font-black mb-16 flex items-center gap-4"><BrainCircuit size={40} className="text-primary" /> {config.skills_title}</h2>
+          <h2 className="text-4xl font-black mb-16 flex items-center gap-4"><BrainCircuit size={40} className="text-primary" /> {config.skills_title || 'TECHNICAL SKILLS'}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
             {categories.map(cat => (
               <div key={cat} className="space-y-8">
@@ -374,7 +374,7 @@ const LandingPage = () => {
       </section>
 
       <section id="education" className="py-24 px-4 max-w-7xl mx-auto">
-        <motion.h2 {...fadeInUp} className="text-3xl font-black mb-12 flex items-center gap-3"><GraduationCap className="text-primary" /> {config.education_title}</motion.h2>
+        <motion.h2 {...fadeInUp} className="text-3xl font-black mb-12 flex items-center gap-3"><GraduationCap className="text-primary" /> {config.education_title || 'EDUCATION'}</motion.h2>
         <div className="grid md:grid-cols-2 gap-8">
           {education.map(edu => <EducationCard key={edu.id} edu={edu} />)}
         </div>
